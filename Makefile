@@ -1,10 +1,11 @@
-# $Id: Makefile,v 1.1 2014/03/10 21:44:36 luis Exp $
+# $Id: Makefile,v 1.2 2014/03/10 22:34:41 luis Exp $
 # Author: Luis Colorado <lc@luiscoloradosistemas.com>
 # Date: Mon Mar 10 22:37:15 CET 2014
 # Disclaimer: (C) 2014 LUIS COLORADO SISTEMAS S.L.U.
 #			All rights reserved.
 
-RM= rm -f
+RM=rm -f
+
 targets = regr_polin gauss
 
 .PHONY: all clean

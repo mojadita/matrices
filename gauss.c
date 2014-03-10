@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.1 2014/03/10 09:22:27 luis Exp $
+/* $Id: gauss.c,v 1.2 2014/03/10 22:34:41 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -17,7 +17,7 @@
 
 #define EPSILON		1.0E-10
 
-int debug = 0;
+int debug = 0, random_flag = 0;
 
 typedef double **matriz;
 
@@ -246,23 +246,24 @@ int main(int argc, char **argv)
 	matriz A;
 	int A_l, A_c, opt;
 
-	while((opt = getopt(argc, argv, "d")) != EOF) {
+	while((opt = getopt(argc, argv, "dr")) != EOF) {
 		switch(opt) {
 		case 'd': debug ^= 1; break;
+		case 'r': random_flag ^= 1; break;
 		} /* switch */
 	} /* while */
 
 	A_l = leer_entero("Filas", 1, INT_MAX);
 	A_c = leer_entero("Columnas", 1, INT_MAX);
-	printf("A_l(%d)*(sizeof(double *)(%d) + A_c(%d) "
-		"* sizeof(double)(%d)) = %d\n",
-		A_l, sizeof(double *),
-		A_c,
-		sizeof(double),
-		A_l*(sizeof(double *) + A_c*sizeof(double)));
-	assert(A_l*((int)sizeof(double *) + A_c * (int)sizeof(double)) > 0);
 
-	A = leer_matriz(A_l, A_c, "A");
+	if (random_flag) {
+		int i, j;
+		A = new_matriz(A_l, A_c);
+		for (i = 0; i < A_l; i++)
+			for (j = 0; j < A_c; j++)
+				A[i][j] = (double)rand()/(double)INT_MAX;
+	} else
+		A = leer_matriz(A_l, A_c, "A");
 
 	printf("La matriz A introducida es:\n");
 	imprime_matriz(A, A_l, A_c);
@@ -273,4 +274,4 @@ int main(int argc, char **argv)
 	imprime_matriz(A, A_l, A_c);
 } /* main */
 
-/* $Id: gauss.c,v 1.1 2014/03/10 09:22:27 luis Exp $ */
+/* $Id: gauss.c,v 1.2 2014/03/10 22:34:41 luis Exp $ */
