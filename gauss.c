@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.1 2014/03/10 09:22:27 luis Exp $
+/* $Id: gauss.c,v 1.1.1.1 2014/03/10 09:22:27 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -273,4 +273,4 @@ int main(int argc, char **argv)
 	imprime_matriz(A, A_l, A_c);
 } /* main */
 
-/* $Id: gauss.c,v 1.1 2014/03/10 09:22:27 luis Exp $ */
+/* $Id: gauss.c,v 1.1.1.1 2014/03/10 09:22:27 luis Exp $ */

@@ -1,4 +1,4 @@
-/* $Id: matrix.c,v 1.1 2014/03/10 09:22:27 luis Exp $
+/* $Id: matrix.c,v 1.1.1.1 2014/03/10 09:22:27 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Sat Feb 10 20:51:36 CET 2007
@@ -263,4 +263,4 @@ int main()
 
 } /* main */
 
-/* $Id: matrix.c,v 1.1 2014/03/10 09:22:27 luis Exp $ */
+/* $Id: matrix.c,v 1.1.1.1 2014/03/10 09:22:27 luis Exp $ */
