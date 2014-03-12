@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.2 2014/03/10 22:34:41 luis Exp $
+/* $Id: gauss.c,v 1.3 2014/03/12 11:22:54 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -245,6 +245,7 @@ int main(int argc, char **argv)
 {
 	matriz A;
 	int A_l, A_c, opt;
+	double det;
 
 	while((opt = getopt(argc, argv, "dr")) != EOF) {
 		switch(opt) {
@@ -268,10 +269,12 @@ int main(int argc, char **argv)
 	printf("La matriz A introducida es:\n");
 	imprime_matriz(A, A_l, A_c);
 
-	gauss(A, A_l, A_c, debug);
+	det = gauss(A, A_l, A_c, debug);
+
+	if (!debug) printf("El determinante vale: %lg\n", det);
 
 	printf("La matriz A queda finalmente:\n");
 	imprime_matriz(A, A_l, A_c);
 } /* main */
 
-/* $Id: gauss.c,v 1.2 2014/03/10 22:34:41 luis Exp $ */
+/* $Id: gauss.c,v 1.3 2014/03/12 11:22:54 luis Exp $ */

@@ -1,4 +1,4 @@
-/* $Id: regr_polin.c,v 1.1 2014/03/10 09:22:27 luis Exp $
+/* $Id: regr_polin.c,v 1.2 2014/03/12 11:22:54 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -314,17 +314,20 @@ int main(int argc, char **argv)
 	printf("La matriz A queda:\n");
 	imprime_matriz(A, n+1, n+2);
 
-#if 0
-	printf("$N = %lg$\n", sum_xi[0]);
-	for (i = 1; i <= 2*n; i++)
-		printf(", $\\sum_{i=1}^N x_i^%d = %lg$\n", i, sum_xi[i]);
-	printf("\\par\n");
-	printf("$\\sum_{i=1}^N y_i = %lg$\n", sum_yi_xi[0]);
-	for (i = 1; i <= n; i++)
-		printf(", $\\sum_{i=1}^N x_i^%dy_i = %lg$\n", i, sum_yi_xi[i]);
-	printf("\\par\n");
-#endif
+	printf("El polinomio queda:\n");
+	
+	for (i = 0, j = 0; i <= n; i++) {
+		if (!esCero(A[i][n+1])) {
+			j++;
+			printf(" %+lg", A[i][n+1]);
+			if (i) printf("*X");
+			if (i > 1) printf("^%d", i);
+			if(j % 8 == 0) printf("\n");
+		}
+	} /* for */
+	if (j % 8 != 0) printf("\n");
+
 	return 0;
 } /* main */
 
-/* $Id: regr_polin.c,v 1.1 2014/03/10 09:22:27 luis Exp $ */
+/* $Id: regr_polin.c,v 1.2 2014/03/12 11:22:54 luis Exp $ */
