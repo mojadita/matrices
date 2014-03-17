@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.3 2014/03/12 11:22:54 luis Exp $
+/* $Id: gauss.c,v 1.4 2014/03/17 15:29:08 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -262,7 +262,7 @@ int main(int argc, char **argv)
 		A = new_matriz(A_l, A_c);
 		for (i = 0; i < A_l; i++)
 			for (j = 0; j < A_c; j++)
-				A[i][j] = (double)rand()/(double)INT_MAX;
+				A[i][j] = (double)rand()/(double)RAND_MAX;
 	} else
 		A = leer_matriz(A_l, A_c, "A");
 
@@ -277,4 +277,4 @@ int main(int argc, char **argv)
 	imprime_matriz(A, A_l, A_c);
 } /* main */
 
-/* $Id: gauss.c,v 1.3 2014/03/12 11:22:54 luis Exp $ */
+/* $Id: gauss.c,v 1.4 2014/03/17 15:29:08 luis Exp $ */
