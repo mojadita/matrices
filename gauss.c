@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.5 2014/03/19 14:24:33 luis Exp $
+/* $Id: gauss.c,v 1.6 2014/03/19 17:39:19 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -139,7 +139,7 @@ double gauss(matriz A, int lin, int col, double eps, int debug)
 	 * considerando */
 	for(i = 0; i < lin-1; i++) {
 		int mod = 0;
-		if (fabs(A[i][i]) < eps) {
+		if (1 || fabs(A[i][i]) < eps) {
 			/* si el elemento de la diagonal es
 			 * cero, no podemos hacer ceros
 			 * (hariamos una division por cero)
@@ -178,7 +178,7 @@ double gauss(matriz A, int lin, int col, double eps, int debug)
 		/* bien, hacemos ceros debajo de la
 		 * diagonal */
 		for (j = i + 1; j < lin; j++) {
-			if (fabs(A[j][i]) >= eps) {
+			if (1 || fabs(A[j][i]) >= eps) {
 				double x = -A[j][i] / A[i][i];
 				/* a la fila j, le a~nadimos)
 				 * x por la fila i */
@@ -233,4 +233,4 @@ double gauss(matriz A, int lin, int col, double eps, int debug)
 	return det;
 } /* gauss */
 
-/* $Id: gauss.c,v 1.5 2014/03/19 14:24:33 luis Exp $ */
+/* $Id: gauss.c,v 1.6 2014/03/19 17:39:19 luis Exp $ */
