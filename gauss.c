@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.4 2014/03/17 15:29:08 luis Exp $
+/* $Id: gauss.c,v 1.5 2014/03/19 14:24:33 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -14,10 +14,6 @@
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
-
-#define EPSILON		1.0E-10
-
-int debug = 0, random_flag = 0;
 
 typedef double **matriz;
 
@@ -77,12 +73,7 @@ matriz leer_matriz(int nlin, int ncol, char *nombre)
 	return m;
 } /* leer_matriz */
 
-int esCero(double x)
-{
-	return fabs(x) < EPSILON;
-} /* esCero */
-
-int imprime_matriz(matriz m, int filas, int columnas)
+int imprime_matriz(matriz m, int filas, int columnas, double eps)
 {
 	int lin, col;
 	int res = 0;
@@ -91,7 +82,7 @@ int imprime_matriz(matriz m, int filas, int columnas)
 		res += printf(lin == 0 ? "{{" : " {");
 		for (col = 0; col < columnas; col++) {
 			if (col > 0) printf(",\t");
-			if (esCero(m[lin][col]))
+			if (fabs(m[lin][col]) < eps)
 				res += printf("0");
 			else
 				res += printf("%lg", m[lin][col]);
@@ -137,7 +128,7 @@ static void divide_fila(matriz A, int cols, int i, double x)
 
 /* Realiza el metodo de eliminacion de Gauss a una matriz de
  * lin lineas y col columnas. */
-double gauss(matriz A, int lin, int col, int debug)
+double gauss(matriz A, int lin, int col, double eps, int debug)
 {
 	int i, j, k;
 	double det = 1.0;
@@ -148,7 +139,7 @@ double gauss(matriz A, int lin, int col, int debug)
 	 * considerando */
 	for(i = 0; i < lin-1; i++) {
 		int mod = 0;
-		if (esCero(A[i][i])) {
+		if (fabs(A[i][i]) < eps) {
 			/* si el elemento de la diagonal es
 			 * cero, no podemos hacer ceros
 			 * (hariamos una division por cero)
@@ -178,15 +169,16 @@ double gauss(matriz A, int lin, int col, int debug)
 				mod = 1;
 			}
 		} /* if */
-		if (esCero(A[i][i])) {
+		if (fabs(A[i][i]) < eps) {
 			printf("La matriz A es singular:\n");
 			printf("el rango es %d\n", i);
 			return 0.0;
 		} /* if */
+
 		/* bien, hacemos ceros debajo de la
 		 * diagonal */
 		for (j = i + 1; j < lin; j++) {
-			if (!esCero(A[j][i])) {
+			if (fabs(A[j][i]) >= eps) {
 				double x = -A[j][i] / A[i][i];
 				/* a la fila j, le a~nadimos)
 				 * x por la fila i */
@@ -198,7 +190,7 @@ double gauss(matriz A, int lin, int col, int debug)
 		 * diagonal */
 		/* vamos calculando el determinante */
 		det = det * A[i][i];
-		if (debug && mod) imprime_matriz(A, lin, col);
+		if (debug && mod) imprime_matriz(A, lin, col, eps);
 	} /* for i */
 
 	/* cuando llegamos aqui hemos hecho ceros
@@ -207,7 +199,7 @@ double gauss(matriz A, int lin, int col, int debug)
 	 * determinante. */
 	det = det * A[i][i];
 
-	if (esCero(det)) {
+	if (fabs(det) < eps) {
 		printf("La matriz A es singular: det = 0.0\n");
 		printf("rango de A es %d\n", lin-1);
 		return 0.0;
@@ -224,13 +216,13 @@ double gauss(matriz A, int lin, int col, int debug)
 		for (i = lin-1; i > 0; i--) {
 			int mod = 0;
 			for (j = i - 1; j >= 0; j--) {
-				if (!esCero(A[j][i])) {
+				if (fabs(A[j][i]) >= eps) {
 					double x = -A[j][i] / A[i][i];
 					P(A, col, j, x, i);
 					mod = 1;
 				} /* if */
 			} /* for j */
-			if (debug && mod) imprime_matriz(A, lin, col);
+			if (debug && mod) imprime_matriz(A, lin, col, eps);
 		} /* for i */
 
 		for (i = 0; i < lin; i++) {
@@ -241,40 +233,4 @@ double gauss(matriz A, int lin, int col, int debug)
 	return det;
 } /* gauss */
 
-int main(int argc, char **argv)
-{
-	matriz A;
-	int A_l, A_c, opt;
-	double det;
-
-	while((opt = getopt(argc, argv, "dr")) != EOF) {
-		switch(opt) {
-		case 'd': debug ^= 1; break;
-		case 'r': random_flag ^= 1; break;
-		} /* switch */
-	} /* while */
-
-	A_l = leer_entero("Filas", 1, INT_MAX);
-	A_c = leer_entero("Columnas", 1, INT_MAX);
-
-	if (random_flag) {
-		int i, j;
-		A = new_matriz(A_l, A_c);
-		for (i = 0; i < A_l; i++)
-			for (j = 0; j < A_c; j++)
-				A[i][j] = (double)rand()/(double)RAND_MAX;
-	} else
-		A = leer_matriz(A_l, A_c, "A");
-
-	printf("La matriz A introducida es:\n");
-	imprime_matriz(A, A_l, A_c);
-
-	det = gauss(A, A_l, A_c, debug);
-
-	if (!debug) printf("El determinante vale: %lg\n", det);
-
-	printf("La matriz A queda finalmente:\n");
-	imprime_matriz(A, A_l, A_c);
-} /* main */
-
-/* $Id: gauss.c,v 1.4 2014/03/17 15:29:08 luis Exp $ */
+/* $Id: gauss.c,v 1.5 2014/03/19 14:24:33 luis Exp $ */
