@@ -1,4 +1,4 @@
-/* $Id: regr_polin.c,v 1.3 2014/03/19 14:24:33 luis Exp $
+/* $Id: regr_polin.c,v 1.4 2014/03/19 21:57:23 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -18,7 +18,7 @@
 #include "gauss.h"
 
 #define DEFAULT_GRADE	1
-#define EPSILON		1.0E-14
+#define EPSILON		1.0E-10
 
 int debug = 0;
 
@@ -125,4 +125,4 @@ int main(int argc, char **argv)
 	return 0;
 } /* main */
 
-/* $Id: regr_polin.c,v 1.3 2014/03/19 14:24:33 luis Exp $ */
+/* $Id: regr_polin.c,v 1.4 2014/03/19 21:57:23 luis Exp $ */
