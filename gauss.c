@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.8 2014/03/26 12:58:37 luis Exp $
+/* $Id: gauss.c,v 1.9 2014/03/26 13:06:53 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -224,7 +224,7 @@ double gauss(matriz A, int lin, int col, double eps, int debug)
 	 * identidad, de forma que se resuelva el sistema de
 	 * ecuaciones planteado. */
 	if (col > lin) {
-		for (i = lin-1; i > 0; i--) {
+		for (i = lin-1; i >= 0; i--) {
 			int mod = FALSE;
 			double p;
 			j = i;
@@ -265,4 +265,4 @@ double gauss(matriz A, int lin, int col, double eps, int debug)
 	return det;
 } /* gauss */
 
-/* $Id: gauss.c,v 1.8 2014/03/26 12:58:37 luis Exp $ */
+/* $Id: gauss.c,v 1.9 2014/03/26 13:06:53 luis Exp $ */
