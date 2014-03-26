@@ -1,4 +1,4 @@
-/* $Id: regr_polin.c,v 1.4 2014/03/19 21:57:23 luis Exp $
+/* $Id: regr_polin.c,v 1.5 2014/03/26 13:03:30 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -101,13 +101,17 @@ int main(int argc, char **argv)
 	for (i = 0; i <= n; i++)
 		A[i][n+1] = sum_yi_xi[i];
 
-	printf("El sistema a resolver es:\n");
-	imprime_matriz(A, n+1, n+2, EPSILON);
+	if (debug) {
+		printf("El sistema a resolver es:\n");
+		imprime_matriz(A, n+1, n+2, EPSILON);
+	} /* if */
 
 	gauss(A, n+1, n+2, EPSILON, debug);
 
-	printf("La matriz A queda:\n");
-	imprime_matriz(A, n+1, n+2, EPSILON);
+	if (debug) {
+		printf("La matriz A queda:\n");
+		imprime_matriz(A, n+1, n+2, EPSILON);
+	} /* if */
 
 	printf("El polinomio queda:\n");
 	
@@ -125,4 +129,4 @@ int main(int argc, char **argv)
 	return 0;
 } /* main */
 
-/* $Id: regr_polin.c,v 1.4 2014/03/19 21:57:23 luis Exp $ */
+/* $Id: regr_polin.c,v 1.5 2014/03/26 13:03:30 luis Exp $ */
