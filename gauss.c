@@ -1,4 +1,4 @@
-/* $Id: gauss.c,v 1.9 2014/03/26 13:06:53 luis Exp $
+/* $Id: gauss.c,v 1.10 2014/04/01 17:22:44 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -20,88 +20,9 @@
 #define TRUE	(!FALSE)
 #endif
 
-typedef double **matriz;
-
-static int leer_entero(char *prompt, int min, int max)
-{
-	int res;
-
-	do {
-		if (isatty(0)) printf("%s? ", prompt);
-		scanf("%d", &res);
-		if ((res < min) || (res > max)) {
-			printf("Ojo, \"%s\" debe estar entre [%d, %d]\n",
-					prompt, min, max);
-		} /* if */
-	} while ((res < min) || (res > max));
-	return res;
-} /* leer_entero */
-
-matriz new_matriz(int nlin, int ncol)
-{
-	double **res, *p;
-	int i;
-
-	assert(res
-		= malloc(nlin*sizeof(double *)
-		+ nlin*ncol*sizeof(double)));
-
-	p = (double *)(res + nlin);
-	for (i = 0; i < nlin; i++) {
-		res[i] = p;
-		p += ncol;
-	} /* for */
-
-	return res;
-} /* new_matriz */
-
-matriz leer_matriz(int nlin, int ncol, char *nombre)
-{
-	int n, lin, col;
-	matriz m;
-
-	m = new_matriz(nlin, ncol);
-
-	for (lin = 0; lin < nlin; lin++) {
-		if (isatty(0)) printf("Fila %d\n", lin);
-		for (col = 0; col < ncol; col++) {
-			if (isatty(0))
-				printf("%s[%d][%d] = ",
-					nombre,
-					lin,
-					col);
-			scanf("%lg", &m[lin][col]);
-		} /* for col */
-		if (isatty(0)) printf("\n");
-	} /* for lin */
-	if (isatty(0)) printf("\n");
-	return m;
-} /* leer_matriz */
-
-int imprime_matriz(matriz m, int filas, int columnas, double eps)
-{
-	int lin, col;
-	int res = 0;
-
-	for (lin = 0; lin < filas; lin++) {
-		res += printf(lin == 0 ? "{{" : " {");
-		for (col = 0; col < columnas; col++) {
-			if (col > 0) printf(",\t");
-			if (fabs(m[lin][col]) < eps)
-				res += printf("0");
-			else
-				res += printf("%lg", m[lin][col]);
-		}
-		res += printf(lin == filas-1 ? "}}\n" : "}\n");
-	}
-	res += printf("\n");
-
-	return res;
-} /* imprime_matriz */
-
 /* suma a la fila i-esima de la matriz A (de cols columnas)
  * la fila j-esima multiplicada por k. */
-static void P(matriz A, int cols, int i, double k, int j)
+static void P(double **A, int cols, int i, double k, int j)
 {
 	int l; /* k lo hemos usado en la lista de parametros */
 
@@ -111,7 +32,7 @@ static void P(matriz A, int cols, int i, double k, int j)
 } /* P */
 
 /* intercambia las filas i y j de la matriz A */
-static void intercambia(matriz A, int cols, int i, int j)
+static void intercambia(double **A, int cols, int i, int j)
 {
 	int k;
 	for (k = 0; k < cols; k++) {
@@ -123,17 +44,17 @@ static void intercambia(matriz A, int cols, int i, int j)
 } /* intercambia */
 
 /* Divide los elementos de la fila i por el valor x. */
-static void divide_fila(matriz A, int cols, int i, double x)
+static void divide_fila(double **A, int cols, int i, double x)
 {
 	int j;
 	for (j = 0; j < cols; j++) {
-		A[i][j] = A[i][j] / x;
+		A[i][j] /= x;
 	} /* for */
 } /* divide_fila */
 
 /* Realiza el metodo de eliminacion de Gauss a una matriz de
  * lin lineas y col columnas. */
-double gauss(matriz A, int lin, int col, double eps, int debug)
+double gauss(double **A, int lin, int col, double eps, int debug)
 {
 	int i, j, k;
 	double det = 1.0;
@@ -265,4 +186,4 @@ double gauss(matriz A, int lin, int col, double eps, int debug)
 	return det;
 } /* gauss */
 
-/* $Id: gauss.c,v 1.9 2014/03/26 13:06:53 luis Exp $ */
+/* $Id: gauss.c,v 1.10 2014/04/01 17:22:44 luis Exp $ */

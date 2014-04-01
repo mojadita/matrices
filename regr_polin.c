@@ -1,4 +1,4 @@
-/* $Id: regr_polin.c,v 1.5 2014/03/26 13:03:30 luis Exp $
+/* $Id: regr_polin.c,v 1.6 2014/04/01 17:22:44 luis Exp $
  * vim: ts=4 sw=4 nowrap
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Feb 17 19:51:53 CET 2014
@@ -15,27 +15,13 @@
 #include <limits.h>
 #include <math.h>
 
+#include "io.h"
 #include "gauss.h"
 
 #define DEFAULT_GRADE	1
 #define EPSILON		1.0E-10
 
 int debug = 0;
-
-static int leer_entero(char *prompt, int min, int max)
-{
-	int res;
-
-	do {
-		if (isatty(0)) printf("%s? ", prompt);
-		scanf("%d", &res);
-		if ((res < min) || (res > max)) {
-			printf("Ojo, \"%s\" debe estar entre [%d, %d]\n",
-					prompt, min, max);
-		} /* if */
-	} while ((res < min) || (res > max));
-	return res;
-} /* leer_entero */
 
 int main(int argc, char **argv)
 {
@@ -129,4 +115,4 @@ int main(int argc, char **argv)
 	return 0;
 } /* main */
 
-/* $Id: regr_polin.c,v 1.5 2014/03/26 13:03:30 luis Exp $ */
+/* $Id: regr_polin.c,v 1.6 2014/04/01 17:22:44 luis Exp $ */
