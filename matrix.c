@@ -57,7 +57,7 @@ matriz leer_matriz(char *n, int lin, int col)
 
 	for (lin = 0; lin < res->l; lin++) {
 		for (col = 0; col < res->c; col++) {
-			printf("%s[%d][%d]? ", n, lin, col);
+			printf("%s[%d,%d]? ", n, lin, col);
 			scanf("%lg", &(res->v[lin][col]));
 		} /* for */
 	}
@@ -86,11 +86,9 @@ void imprime_matriz(matriz m, int nlin, int ncol)
 void copia_matriz(double a[][], int nlin, int ncol, double b[][])
 {
 	int i, j;
-	for (i = 0; i < nlin; i = i + 1) {
-		for (j = 0; j < ncol; j = j + 1) {
+	for (i = 0; i < nlin; i = i + 1)
+		for (j = 0; j < ncol; j = j + 1)
 			b[i][j] = a[i][j];
-		}
-	}
 } /* copia_matriz */
 
 void multiplica_matriz(double a[N][N], double b[N][N], double c[N][N])

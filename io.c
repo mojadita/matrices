@@ -66,7 +66,7 @@ matriz leer_matriz(int nlin, int ncol, char *nombre)
 		if (isatty(0)) printf("Fila %d\n", lin);
 		for (col = 0; col < ncol; col++) {
 			if (isatty(0))
-				printf("%s[%d][%d] = ",
+				printf("%s[%d,%d] = ",
 					nombre,
 					lin,
 					col);
