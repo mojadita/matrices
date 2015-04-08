@@ -99,14 +99,16 @@ int main(int argc, char **argv)
 		imprime_matriz(A, n+1, n+2, EPSILON);
 	} /* if */
 
-	printf("El polinomio queda:\n");
+    if (debug) {
+        printf("El polinomio queda:\n");
+    } /* if */
 	
 	for (i = 0, j = 0; i <= n; i++) {
 		if (fabs(A[i][n+1]) > EPSILON) {
 			j++;
 			printf(" %+lg", A[i][n+1]);
-			if (i) printf("*X");
-			if (i > 1) printf("^%d", i);
+			if (i) printf("*x");
+			if (i > 1) printf("**%d", i);
 			if(j % 8 == 0) printf("\n");
 		}
 	} /* for */
