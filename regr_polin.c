@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
+#include <errno.h>
 
 #include "io.h"
 #include "gauss.h"
@@ -23,28 +24,12 @@
 
 int debug = 0;
 
-int main(int argc, char **argv)
+void process(FILE *f, int n)
 {
 	int opt, i, j, ln = 0;
-	int n = DEFAULT_GRADE;
 	double *sum_xi, *sum_yi_xi;
-	static char line[80];
+	static char line[1000];
 	matriz A;
-
-	while((opt = getopt(argc, argv, "n:d")) != EOF) {
-		switch(opt) {
-		case 'd': debug ^= 1; break;
-		case 'n': opt = sscanf(optarg, "%d", &n);
-			if (opt != 1 || n < 1) {
-				fprintf(stderr,
-					"WARNING: n parameter invalid(%s), "
-					"defaulting to %d\n",
-					optarg, DEFAULT_GRADE);
-				n = DEFAULT_GRADE;
-			} /* if */
-			break;
-		} /* switch */
-	} /* while */
 
 	assert(sum_xi = calloc(2*n + 1, sizeof(double)));
 	assert(sum_yi_xi = calloc(n + 1, sizeof(double)));
@@ -52,7 +37,7 @@ int main(int argc, char **argv)
 	for (i = 0; i <= 2*n; i++) sum_xi[i] = 0.0;
 	for (i = 0; i <= n; i++) sum_yi_xi[i] = 0.0;
 
-	while (fgets(line, sizeof line, stdin)) {
+	while (fgets(line, sizeof line, f)) {
 		double x_i, y_i, x = 1.0;
 
 		ln++;
@@ -67,25 +52,21 @@ int main(int argc, char **argv)
 			continue;
 		} /* switch */
 
-		for (i = 0; i <= n; i++) {
-			sum_xi[i] += x;
-			sum_yi_xi[i] += x * y_i;
-			x *= x_i;
-		} /* for */
-		for (; i <= 2*n; i++) {
-			sum_xi[i] += x;
+		for (i = 0; i <= 2*n; i++) {
+			sum_xi[i]        += x;
+			if (i <= n)
+                sum_yi_xi[i] += x * y_i;
 			x *= x_i;
 		} /* for */
 	} /* while */
 
 	assert(A = new_matriz(n+1, n+2));
 
-	for (i = 0; i <= n; i++)
+	for (i = 0; i <= n; i++) {
 		for (j = 0; j <= n; j++)
 			A[i][j] = sum_xi[i+j];
-
-	for (i = 0; i <= n; i++)
-		A[i][n+1] = sum_yi_xi[i];
+		A[i][n+1]   = sum_yi_xi[i];
+    }
 
 	if (debug) {
 		printf("El sistema a resolver es:\n");
@@ -114,7 +95,48 @@ int main(int argc, char **argv)
 	} /* for */
 	if (j % 8 != 0) printf("\n");
 
-	return 0;
+} /* process */
+
+int main(int argc, char **argv)
+{
+	int opt;
+	int n = DEFAULT_GRADE;
+
+	while((opt = getopt(argc, argv, "n:d")) != EOF) {
+		switch(opt) {
+		case 'd': debug ^= 1; break;
+		case 'n': opt = sscanf(optarg, "%d", &n);
+			if (opt != 1 || n < 0) {
+				fprintf(stderr,
+					"WARNING: n parameter invalid(%s), "
+					"defaulting to %d\n",
+					optarg, DEFAULT_GRADE);
+				n = DEFAULT_GRADE;
+			} /* if */
+			break;
+		} /* switch */
+	} /* while */
+
+    if (optind < argc) {
+        int i;
+        for (i = optind; i < argc; i++) {
+            FILE *f = fopen(argv[i], "r");
+            if (!f) {
+                fprintf(stderr,
+                        "ERROR: %s: %s(errno=%d)\n",
+                        argv[i],
+                        strerror(errno),
+                        errno);
+                exit(EXIT_FAILURE);
+            } /* if */
+            process(f, n);
+            fclose(f);
+        } /* for */
+    } else {
+        process(stdin, n);
+    } /* if */
+
+	return EXIT_SUCCESS;
 } /* main */
 
 /* $Id: regr_polin.c,v 1.6 2014/04/01 17:22:44 luis Exp $ */
