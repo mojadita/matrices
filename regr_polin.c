@@ -7,14 +7,16 @@
  */
 
 /* Standard include files */
-#include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
-#include <unistd.h>
 #include <assert.h>
+#include <errno.h>
+#include <getopt.h>
 #include <limits.h>
 #include <math.h>
-#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "io.h"
 #include "gauss.h"
