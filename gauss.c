@@ -7,18 +7,25 @@
  */
 
 /* Standard include files */
-#include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
-#include <unistd.h>
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include "io.h"
+#include "gauss.h"
 
 #ifndef FALSE
 #define	FALSE	0
 #define TRUE	(!FALSE)
 #endif
+
+#define F(_fmt) __FILE__":%d:%s: " _fmt, __LINE__, __func__
+
+#define MIN(_a, _b) ((_a) < (_b) ? (_a) : (_b))
 
 /* suma a la fila i-esima de la matriz A (de cols columnas)
  * la fila j-esima multiplicada por k. */
@@ -32,156 +39,192 @@ static void P(double **A, int cols, int i, double k, int j)
 } /* P */
 
 /* intercambia las filas i y j de la matriz A */
-static void intercambia(double **A, int cols, int i, int j)
+static void I(double **A, int cols, int i, int j)
 {
-	int k;
-	for (k = 0; k < cols; k++) {
-		double aux;
-		aux = A[i][k];
-		A[i][k] = A[j][k];
-		A[j][k] = aux;
-	} /* for */
-} /* intercambia */
+	double *aux = A[i];
+	A[i] = A[j];
+	A[j] = aux;
+} /* I */
 
 /* Divide los elementos de la fila i por el valor x. */
-static void divide_fila(double **A, int cols, int i, double x)
+static void D(double **A, int cols, int i, double x)
 {
 	int j;
 	for (j = 0; j < cols; j++) {
 		A[i][j] /= x;
 	} /* for */
-} /* divide_fila */
+} /* D */
 
 /* Realiza el metodo de eliminacion de Gauss a una matriz de
- * lin lineas y col columnas. */
-double gauss(double **A, int lin, int col, double eps, int debug)
+ * rows lineas y col columnas. */
+double
+gauss(
+		double **A,
+		int rows,
+		int cols,
+		double eps,
+		int flags,
+		const char *fmt)
 {
-	int i, j, k;
+	int pr, pc;
 	double det = 1.0;
+	int range = MIN(rows, cols);
 
-	/* vamos desde la primera fila hasta la
-	 * penultima, haciendo ceros en las filas
-	 * de debajo del pivote (el pivote es el
-	 * elemento de la fila i, columna j. */
-	for(i = 0, j = 0; i < lin && j < col; i++, j++) {
-		int mod = FALSE;
-		if (fabs(A[i][j]) < eps) {
-			/* El pivote tiene que ser distinto de
-			 * cero, no podemos hacer ceros
-			 * (hariamos una division por cero)
-			 * debajo de la diagonal.
-			 * Asi que buscamos el elemento
-			 * de mayor valor absoluto, debajo del
-			 * pivote e intercambiamos filas. */
-			double max = fabs(A[i][j]);
-			int i_max = i;
-			for (k = i + 1; k < lin; k++) {
-				if (fabs(A[k][j]) > max) {
-					i_max = k;
-					max = fabs(A[k][j]);
-				} /* if */
-			} /* for j */
-			/* si i_max es distinto de i, es que
-			 * hay un elemento debajo de la
-			 * diagonal principal que tiene valor
-			 * absoluto mayor que el elemento de
-			 * la diagonal, intercambiamos las
-			 * filas y cambiamos de signo el
-			 * determinante. */
-			if (i_max != i) {
-				intercambia(A, col, i, i_max);
-				det = -det;
-				mod = TRUE;
-			}
-		} /* if */
+	if (!fmt) fmt = "%lg";
 
-		/* vamos calculando el determinante siempre
-		 * que los pivotes esten en la diagonal. */
-		if (i == j) det *= A[i][j];
+	/* we declare pivots as const, because it cannot move (as we
+	 * have to free(pivots) at the end. */
+	struct pivot {
+		int row, col;
+		double val;
+	} *const pivots = malloc(range * sizeof *pivots);
 
-		/* si el candidato a pivote sigue siendo 
-		 * demasiado peque~no, no podemos hacer
-		 * ceros, ya que dividimos por un numero
-		 * demasiado peque~no. Esto significa que
-		 * todos los elementos debajo del pivote son
-		 * cero y que no hay pivote, hemos de pasar
-		 * al elemento de la derecha. */
-		if (fabs(A[i][j]) < eps) {
-			if (i == j) {
-				/* lo imprimimos solo la primera vez. */
-				printf("La matriz A es singular.\n");
-			}
-			/* cuando se incrementen i y j, el
-			 * elemento seleccionado como pivote
-			 * sera el elemento a la derecha del
-			 * ex-pivote actual. */
-			i--; 
-			continue;
-		} /* if */
+	assert(pivots != NULL);
 
-		/* bien, hacemos ceros debajo del
-		 * pivote */
-		for (k = i + 1; k < lin; k++) {
-			if (1 || fabs(A[k][j]) >= eps) {
-				double x = -A[k][j] / A[i][j];
-				/* a la fila k, le a~nadimos)
-				 * x por la fila i */
-				P(A, col, k, x, i);
-				mod = TRUE;
-			} /* if */
-		} /* for */
-		/* hemos hecho ceros debajo de los
-		 * pivotes. */
-		if (debug && mod) imprime_matriz(A, lin, col, eps);
-	} /* for i */
+	/* go from first pivot to previous to last, making zeros
+	 * under the pivot.  Pivot is initialized to (0,0) and allows
+	 * to determine the rank of the matrix. */
+	struct pivot *p = pivots;
+	for(pr = 0, pc = 0; pr < rows && pc < cols; pr++, pc++) {
+		bool mod = FALSE;
+		p->row = pr;
+		p->col = pc;
+		double pv = A[pr][pc];
+		p->val = pv;
 
-	if (debug)
-		printf("El determinante vale: %lg\n",
-			(i == j) ? det : 0.0);
+		/* if the pivot candidate is not valid, search for a
+		 * better one. */
+		if (fabs(pv) < eps) {
+			/* The pivot must be != zero, as we use it in the
+			 * denominator of the algorithm that makes zeros under
+			 * (and above) the diagonal.
+			 * We must search under it for an suitable element,
+			 * and exchange rows, so the pivot becomes that
+			 * element.
+			 * We search for the greatest value (in absolute
+			 * value) in order to get the lowest value to
+			 * subtract. */
+			double max = fabs(pv);
+			int r_max = pr;
+			int r;
 
-	/* si col > lin es que la matriz se ha introducido como
-	 * un sistema.  En este caso, debemos continuar, hacer
-	 * ceros sobre la diagonal y obtener una matriz
-	 * identidad, de forma que se resuelva el sistema de
-	 * ecuaciones planteado. */
-	if (col > lin) {
-		for (i = lin-1; i >= 0; i--) {
-			int mod = FALSE;
-			double p;
-			j = i;
-			if (fabs(A[i][j]) < eps) {
-				/* buscamos el pivote.  Este sera
-				 * el primer elemento distinto de cero
-				 * (en valor absoluto, mayor que epsilon)
-				 * que haya a la derecha del elemento de
-				 * la diagonal */
-				for (j = i + 1; j < col; j++) {
-					if (fabs(A[i][j]) >= eps)
-						break;
+			for (r = pr + 1; r < rows; r++) {
+				if (fabs(A[r][pc]) > max) {
+					r_max = r;
+					max = fabs(A[r][pc]);
 				}
-			} /* if */
+			}
 
-			/* si hemos encontrado el pivote... */
-			if (j < col) {
+			/* if r_max is different than pr, we found a larger
+			 * value to use as pivot.  Just update and restart.
+			 */
+			if (r_max > pr) {
+				/* exchange rows pr and r_max */
+				I(A, cols, pr, r_max);
 
-				/* A[i][j] es el pivote */
-				p = A[i][j];
-				/* hacemos ceros sobre el pivote */
-				for (k = i - 1; k >= 0; k--) {
-					if (1||fabs(A[k][j]) >= eps) {
-						double x = -A[k][j] / A[i][j];
-						P(A, col, k, x, i);
-						mod = TRUE;
-					} /* if */
-				} /* for k */
+				/* in order to return a correct value */
+				det = -det;
 
-				/* dividimos toda la fila por el pivote. */
-				if (fabs(p - 1.0) >= eps) 
-					divide_fila(A, col, i, p);
-			} /* if */
-			if (debug && mod) imprime_matriz(A, lin, col, eps);
-		} /* for i */
-	} /* if  */
+				/* the pivot value changed */
+				pv = A[pr][pc];
+				/* but pivot position didn't */
+
+				mod = TRUE;
+			}
+		} /* if (fabs(pv) < eps) */
+
+		/* determinant calculus.  We do this only if the pivot
+		 * is on the diagonal, as if we departed from it, the
+		 * determinant is zero. */
+		if (pr == pc) {
+			det *= A[pr][pc];
+		}
+
+		/* If the pivot candidate continues to be too small, we
+		 * we cannot continue zeroing, as we have a singular
+		 * pivot.
+		 * This means that all the elements under the pivot are
+		 * smaller than it (all to be considered zero), so we
+		 * have a one less rank matrix.
+		 * We need to continue finding pivots on
+		 * the right element. */
+		if (fabs(pv) < eps) {
+			/* decrement range, row (so we go next to the element
+			 * to the right of this one), and continue to next
+			 * pivot candidate. */
+			range--;
+			pr--; 
+			continue;
+		}
+
+		/* If we got here, we have a valid pivot, let's zero the
+		 * column under it. */
+		int r;
+		for (r = pr + 1; r < rows; r++) {
+			double x = -A[r][pc] / pv;
+			/* add x times row pr to row r */
+			P(A, cols, r, x, pr);
+			mod = TRUE;
+		}
+
+		/* print the pivot position and value if debug */
+		if (flags & (FLAG_DEBUG | FLAG_PRINTPIVOTS)) {
+			printf(F("Pivot %ld at [r=%d, c=%d]: val=%lg\n"),
+				(long)(p-pivots), pr, pc, pv);
+		}
+
+        /* now we have zeros under the pivots */
+		if ((flags & FLAG_DEBUG) && mod) {
+			imprime_matriz(A, fmt, rows, cols, eps);
+		}
+
+		/* add the pivot to the stack */
+		p++;
+	} /* for pr */
+
+	if (flags & FLAG_DEBUG) {
+		printf(F("The determinant is %lg\n"), det);
+		printf(F("Range of matrix is %d\n"), range);
+	}
+
+	/* Now we go backwards, using the pivots in the array,
+	 * zeroing the matrix above them, until we get a
+	 * quasi-diagonal mattrix. */
+	if (!(flags & FLAG_DONTDOLASTPASS)) {
+		while (--p >= pivots) {
+			bool mod = FALSE;
+
+			/* pivot position */
+			int pr = p->row,
+				pc = p->col;
+			double pv = p->val;
+
+			if (flags & FLAG_DEBUG) {
+				printf(F("Processing pivot %ld at "
+						"[r=%d][c=%d] (val = %lg)\n"),
+					(long)(p - pivots), pr, pc, pv);
+			}
+
+			/* zero above the pivot */
+            int r;
+			for (r = 0; r < pr; r++) {
+				double k = -A[r][pc] / pv;
+				P(A, cols, r, k, pr);
+				mod = TRUE;
+			} /* for r */
+
+			/* divide all the row by the pivot */
+			if (fabs(pv - 1.0) >= eps) {
+				D(A, cols, pr, pv);
+				mod = TRUE;
+			}
+			if ((flags & FLAG_DEBUG) && mod) {
+				imprime_matriz(A, fmt, rows, cols, eps);
+			}
+		} /* while more pivots */
+	} /* if (flags & FLAG_LASTPASS) */
+
+	free(pivots);
 
 	return det;
 } /* gauss */

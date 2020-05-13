@@ -8,7 +8,20 @@
 #ifndef _GAUSS_H
 #define _GAUSS_H
 
-double gauss(double **A, int nlin, int ncol, double epsilon, int debug);
+#define FLAG_DEBUG			(1 << 0)
+#define FLAG_PRINTPIVOTS	(1 << 1)
+#define FLAG_DONTDOLASTPASS	(1 << 2)
+
+double	/* returns the determinant value */
+gauss(  /* executes Gauss-Jordan on the matrix A */
+	double **A, /* matrix to be operated upon. */
+	int nlin,   /* rows of matrix. */
+	int ncol,   /* columns of matrix. */
+	double epsilon, /* value of epsilon under which element is
+					 * considered zero. */
+	int flags, /* FLAGS, see above */
+	const char *fmt); /* format to print each element, "%lg" used
+					   * if NULL */
 
 #endif /* _GAUSS_H */
 /* $Id: gauss.h,v 1.2 2014/04/01 17:22:44 luis Exp $ */

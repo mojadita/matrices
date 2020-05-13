@@ -24,7 +24,9 @@
 #define DEFAULT_GRADE	1
 #define EPSILON		1.0E-10
 
-int debug = 0;
+int flags = 0;
+
+char *format = "%lg";
 
 void process(FILE *f, int n)
 {
@@ -70,19 +72,19 @@ void process(FILE *f, int n)
 		A[i][n+1]   = sum_yi_xi[i];
     }
 
-	if (debug) {
+	if (flags & FLAG_DEBUG) {
 		printf("El sistema a resolver es:\n");
-		imprime_matriz(A, n+1, n+2, EPSILON);
+		imprime_matriz(A, format, n+1, n+2, EPSILON);
 	} /* if */
 
-	gauss(A, n+1, n+2, EPSILON, debug);
+	gauss(A, n+1, n+2, EPSILON, flags, format);
 
-	if (debug) {
+	if (flags & FLAG_DEBUG) {
 		printf("La matriz A queda:\n");
-		imprime_matriz(A, n+1, n+2, EPSILON);
+		imprime_matriz(A, format, n+1, n+2, EPSILON);
 	} /* if */
 
-    if (debug) {
+    if (flags & FLAG_DEBUG) {
         printf("El polinomio queda:\n");
     } /* if */
 	
@@ -104,9 +106,10 @@ int main(int argc, char **argv)
 	int opt;
 	int n = DEFAULT_GRADE;
 
-	while((opt = getopt(argc, argv, "n:d")) != EOF) {
+	while((opt = getopt(argc, argv, "n:df:")) != EOF) {
 		switch(opt) {
-		case 'd': debug ^= 1; break;
+		case 'd': flags ^= FLAG_DEBUG; break;
+		case 'f': format = optarg; break;
 		case 'n': opt = sscanf(optarg, "%d", &n);
 			if (opt != 1 || n < 0) {
 				fprintf(stderr,

@@ -78,7 +78,13 @@ matriz leer_matriz(int nlin, int ncol, char *nombre)
 	return m;
 } /* leer_matriz */
 
-int imprime_matriz(matriz m, int filas, int columnas, double eps)
+int
+imprime_matriz(
+		matriz m,
+		const char *fmt,
+		int filas,
+		int columnas,
+		double eps)
 {
 	int lin, col;
 	int res = 0;
@@ -86,15 +92,14 @@ int imprime_matriz(matriz m, int filas, int columnas, double eps)
 	for (lin = 0; lin < filas; lin++) {
 		res += printf(lin == 0 ? "{{" : " {");
 		for (col = 0; col < columnas; col++) {
-			if (col > 0) printf(",\t");
+			if (col > 0) printf(", ");
 			if (fabs(m[lin][col]) < eps)
-				res += printf("0");
+				res += printf(fmt, 0.0);
 			else
-				res += printf("%lg", m[lin][col]);
+				res += printf(fmt, m[lin][col]);
 		}
 		res += printf(lin == filas-1 ? "}}\n" : "}\n");
 	}
-	res += printf("\n");
 
 	return res;
 } /* imprime_matriz */

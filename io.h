@@ -11,10 +11,30 @@
 
 typedef double **matriz;
 
-int leer_entero(char *prompt, int min, int max);
-matriz new_matriz(int nlin, int ncol);
-matriz leer_matriz(int nlin, int ncol, char *nombre);
-int imprime_matriz(matriz m, int filas, int columnas, double eps);
+int
+leer_entero(
+	char *prompt,
+	int min,
+	int max);
+
+matriz
+new_matriz(
+	int nlin,
+	int ncol);
+
+matriz
+leer_matriz(
+	int nlin,
+	int ncol,
+	char *nombre);
+
+int
+imprime_matriz(
+		matriz m,
+		const char *fmt,
+		int filas,
+		int columnas,
+		double eps);
 
 #endif /* _IO_H */
 /* $Id: io.h,v 1.1 2014/04/01 17:22:44 luis Exp $ */
