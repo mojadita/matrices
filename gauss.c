@@ -18,6 +18,8 @@
 #include "io.h"
 #include "gauss.h"
 
+#include "io.h"
+
 #ifndef FALSE
 #define	FALSE	0
 #define TRUE	(!FALSE)
