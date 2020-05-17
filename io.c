@@ -16,96 +16,110 @@
 #include <limits.h>
 #include <math.h>
 
-typedef double **matriz;
-
-int leer_entero(char *prompt, int min, int max)
+/* reads an int with prompt if input is a tty.
+ * Checks that the value is between min and max,
+ * and repeats the question in case it is not. */
+int read_int(char *prompt, int min, int max)
 {
-	int res;
-	bool istty = isatty(0);
+    int res = 0, n;
+    bool istty = isatty(0);
 
-	do {
-		if (istty) printf("%s? ", prompt);
-		scanf("%d", &res);
-		if ((res < min) || (res > max)) {
-			printf("Ojo, \"%s\" debe estar entre [%d, %d]\n",
-					prompt, min, max);
-		} /* if */
-	} while ((res < min) || (res > max));
-	return res;
+    do {
+        if (istty) printf("%s? ", prompt);
+        n = scanf("%d", &res);
+        if ((res < min) || (res > max)) {
+            printf("Ojo, \"%s\" debe estar entre [%d, %d]\n",
+                    prompt, min, max);
+        } /* if */
+    } while (n > 0 && (res < min || res > max));
+    return res;
 } /* leer_entero */
 
-matriz new_matriz(int nlin, int ncol)
+/* generates a new matrix of nlin lines and
+ * ncol columns.
+ * The matrix is allocated in one single malloc, storing
+ * the pointers of each row at the beginning, then the
+ * array, so a matrix can be simulated by a double pointer. */
+double **
+new_matrix(int nlin, int ncol)
 {
-	double **res, *p;
-	int i;
+    double **res, *p;
+    int i;
 
-	assert(res
-		= malloc(nlin*sizeof(double *)
-		+ nlin*ncol*sizeof(double)));
+    res = malloc(nlin*sizeof(double) + nlin*ncol*sizeof(double));
+    assert(res != NULL);
 
-	p = (double *)(res + nlin);
-	for (i = 0; i < nlin; i++) {
-		res[i] = p;
-		p += ncol;
-	} /* for */
+    p = (double *)(res + nlin);
+    for (i = 0; i < nlin; i++) {
+        res[i] = p;
+        p += ncol;
+    } /* for */
 
-	return res;
-} /* new_matriz */
+    return res;
+} /* new_matrix */
 
-matriz leer_matriz(int nlin, int ncol, char *nombre)
+/* reads a matrix of row and cols.
+ * Name is used for the prompts. */
+double **
+read_matrix(int rows, int cols, char *name)
 {
-	int n, lin, col;
-	matriz m;
-	bool istty = isatty(0);
+    int         row,
+                col;
+    double**    m     = new_matrix(rows, cols);
+    bool        istty = isatty(0);
 
-	m = new_matriz(nlin, ncol);
-
-	for (lin = 0; lin < nlin; lin++) {
-		if (istty) printf("Fila %d\n", lin);
-		for (col = 0; col < ncol; col++) {
+    for (row = 0; row < rows; row++) {
+        if (istty) printf("Row %d\n", row);
+        for (col = 0; col < cols; col++) {
 			if (istty)
 				printf("%s[%d,%d] = ",
-					nombre,
-					lin,
-					col);
-			scanf("%lg", &m[lin][col]);
-		} /* for col */
-		if (istty) printf("\n");
-	} /* for lin */
-	if (istty) printf("\n");
-	return m;
-} /* leer_matriz */
+					name, row, col);
+			scanf("%lg", &m[row][col]);
+        } /* for col */
+        if (istty) printf("\n");
+    } /* for lin */
+    if (istty) printf("\n");
+
+    return m;
+} /* read_matrix */
 
 int
-imprime_matriz(
-		matriz m,
-		int filas,
-		int columnas,
-		const char *fmt,
-		double eps)
+print_matrix(
+        double **       m,
+        int             rows,
+        int             cols,
+        const char *    fmt,
+        double          eps)
 {
-	int lin, col;
-	int res = 0;
-	bool istty = isatty(1);
+    int     row,
+            col;
+    int     res = 0;
+    bool  istty = isatty(1);
 
-	if (!istty)
-		printf("%d %d\n", filas, columnas);
-	for (lin = 0; lin < filas; lin++) {
-		if (istty)
-			res += printf(lin == 0 ? "{{" : " {");
-		for (col = 0; col < columnas; col++) {
-			if (istty)
-				if (col > 0) printf(", ");
-			res += printf(fmt, fabs(m[lin][col]) < eps
-					? 0.0
-					: m[lin][col]);
-		}
-		if (istty)
-			res += printf(lin == filas-1 ? "}}" : "}");
-		printf("\n");
-	}
+    if (!istty)
+        printf("%d %d\n", rows, cols);
+    for (row = 0; row < rows; row++) {
+        if (istty)
+            res += printf(row == 0
+                    ? "{{"
+                    : " {");
+        for (col = 0; col < cols; col++) {
+            if (istty && col > 0)
+                    printf(", ");
+            res += printf(fmt,
+                    fabs(m[row][col]) < eps
+                        ? 0.0
+                        : m[row][col]);
+        }
+        if (istty)
+            res += printf(
+                    row == rows-1
+                        ? "}}"
+                        : "}");
+        printf("\n");
+    }
 
-	return res;
-} /* imprime_matriz */
+    return res;
+} /* print_matrix */
 
 /* $Id: io.c,v 1.1 2014/04/01 17:22:44 luis Exp $ */

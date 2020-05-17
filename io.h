@@ -9,32 +9,30 @@
 #ifndef _IO_H
 #define _IO_H
 
-typedef double **matriz;
+int
+read_int(
+    char *      prompt,
+    int         min,
+    int         max);
+
+double **
+new_matrix(
+    int         rows,
+    int         cols);
+
+double **
+read_matrix(
+    int         rows,
+    int         cols,
+    char *      name);
 
 int
-leer_entero(
-	char *prompt,
-	int min,
-	int max);
-
-matriz
-new_matriz(
-	int nlin,
-	int ncol);
-
-matriz
-leer_matriz(
-	int nlin,
-	int ncol,
-	char *nombre);
-
-int
-imprime_matriz(
-		matriz m,
-		int filas,
-		int columnas,
-		const char *fmt,
-		double eps);
+print_matrix(
+        double **   mat,
+        int         rows,
+        int         cols,
+        const char *fmt,
+        double      epsilon);
 
 #endif /* _IO_H */
 /* $Id: io.h,v 1.1 2014/04/01 17:22:44 luis Exp $ */

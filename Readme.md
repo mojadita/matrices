@@ -4,7 +4,7 @@
 `matrices` is an implementation of the Gauss/Jordan
 process to solve linear systems.  An application is
 made to do polynomial regression of degrees greater
-than one.
+or equal than zero.
 
 Several other programs implement other things:
 
@@ -17,8 +17,6 @@ they depend linearly of the previous.
 * `regr_polin` accepts a set of pairs of data and tries to best
 fit a polynomial of degree specified on the command line.
 
-This program is copyright (C) 1979-2014 Luis Colorado
-<lc@luiscoloradosistemas.com> and distribution and use
-is granted under the GPL license version 3.0
-
-You can get a copy of the GPL document at www.gnu.org.
+This program is copyright (C) 1979-2020 Luis Colorado
+<luiscoloradourcola@gmail.com> and distribution and use
+is granted under the BSD license version 2

@@ -2,7 +2,7 @@
  * Author: Luis Colorado <lc@luiscoloradosistemas.com>
  * Date: Mon Mar  3 20:47:47 CET 2014
  * Disclaimer: (C) 2014 LUIS COLORADO SISTEMAS S.L.U.
- * 			All rights reserved.
+ *          All rights reserved.
  */
 
 #ifndef _MATRIX_H
@@ -16,13 +16,13 @@ namespace lcssl {
 
 class tensor<class B> {
 
-	int *dims;
-	B v;
+    int *dims;
+    B v;
 
 public:
-	tensor(int[]);
-	operator+=(const tensor<B>&);
-	operator-=(const tensor<B>&);
+    tensor(int[]);
+    operator+=(const tensor<B>&);
+    operator-=(const tensor<B>&);
 
 
 }; /* class tensor */

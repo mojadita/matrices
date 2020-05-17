@@ -20,55 +20,55 @@
 
 #define F(_fmt) __FILE__":%d:%s: "_fmt,__LINE__,__func__
 
-#define EPSILON		1.0E-10
+#define EPSILON     1.0E-10
 
 int   flags       = 0,
-	  random_flag = 0;
+      random_flag = 0;
 char *format      = "%10lg";
 
 int
 main(
-		int argc,
-		char **argv)
+        int         argc,
+        char **     argv)
 {
-	matriz A;
-	int    rows,
-		   cols,
-		   opt;
-	double det;
+    double **       A;
+    int             rows,
+                    cols,
+                    opt;
+    double          det;
 
-	while((opt = getopt(argc, argv, "df:r")) != EOF) {
-		switch(opt) {
-		case 'd': flags ^= FLAG_DEBUG; break;
-		case 'f': format = optarg; break;
-		case 'r': random_flag ^= 1; break;
-		} /* switch */
-	} /* while */
+    while((opt = getopt(argc, argv, "df:r")) != EOF) {
+        switch(opt) {
+        case 'd': flags ^= FLAG_DEBUG; break;
+        case 'f': format = optarg; break;
+        case 'r': random_flag ^= 1; break;
+        } /* switch */
+    } /* while */
 
-	rows = leer_entero("Rows",    1, INT_MAX);
-	cols = leer_entero("Columns", 1, INT_MAX);
+    rows = read_int("Rows",    1, INT_MAX);
+    cols = read_int("Columns", 1, INT_MAX);
 
-	if (random_flag) {
-		int r, c;
-		A = new_matriz(rows, cols);
-		for (r = 0; r < rows; r++)
-			for (c = 0; c < cols; c++)
-				A[r][c] = (double)rand()/RAND_MAX;
-	} else {
-		A = leer_matriz(rows, cols, "A");
-	}
+    if (random_flag) {
+        int r, c;
+        A = new_matrix(rows, cols);
+        for (r = 0; r < rows; r++)
+            for (c = 0; c < cols; c++)
+                A[r][c] = (double)rand()/RAND_MAX;
+    } else {
+        A = read_matrix(rows, cols, "A");
+    }
 
-	printf(F("Matrix A read is:\n"));
-	imprime_matriz(A, rows, cols, format, EPSILON);
+    printf(F("Matrix A read is:\n"));
+    print_matrix(A, rows, cols, format, EPSILON);
 
-	det = gauss(A, rows, cols, EPSILON, flags, format);
+    det = gauss(A, rows, cols, EPSILON, flags, format);
 
-	printf(F("Determinant value is: %lg\n"), det);
+    printf(F("Determinant value is: %lg\n"), det);
 
-	printf(F("After applying Gauss/Jordan algorithm is:\n"));
-	imprime_matriz(A, rows, cols, format, EPSILON);
+    printf(F("After applying Gauss/Jordan algorithm is:\n"));
+    print_matrix(A, rows, cols, format, EPSILON);
 
-	return 0;
+    return 0;
 } /* main */
 
 /* $Id: sist_lin.c,v 1.2 2014/04/01 17:22:44 luis Exp $ */

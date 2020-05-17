@@ -7,12 +7,13 @@
 RM=rm -f
 
 targets = regr_polin sist_lin gram_schmidt cos
+toclean = $(targets)
 
 .PHONY: all clean
 
 all: $(targets)
 clean:
-	$(RM) $(targets) $(objects)
+	$(RM) $(toclean)
 
 cos_deps              =
 cos_objs			  = cos.o
