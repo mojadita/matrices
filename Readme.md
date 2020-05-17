@@ -1,4 +1,7 @@
-matrices is an implementation of the Gauss/Jordan
+# Gauss/Jordan implementation.
+
+
+`matrices` is an implementation of the Gauss/Jordan
 process to solve linear systems.  An application is
 made to do polynomial regression of degrees greater
 than one.
