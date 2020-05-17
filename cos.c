@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-#define N   128
+#define N   1024
 
 #ifndef TEST
 #define TEST 0
@@ -24,11 +24,11 @@ int main(int argc, char **argv)
         } /* switch */
     } /* while */
 
-    if (n > N) n = N;
-    if (n < 2) n = 2;
+    if (n >  N) n = N;
+    if (n <  2) n = 2;
 
-    if (p < 3) p = 3;
-    if (p > 9) p = 9;
+    if (p <  3) p = 3;
+    if (p > 17) p = 17;
 
     printf("%d %d\n", n, n<<1);
     for (i = 0; i < n; i++) {

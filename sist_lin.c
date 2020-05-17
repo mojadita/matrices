@@ -59,14 +59,14 @@ main(
 	}
 
 	printf(F("Matrix A read is:\n"));
-	imprime_matriz(A, format, rows, cols, EPSILON);
+	imprime_matriz(A, rows, cols, format, EPSILON);
 
 	det = gauss(A, rows, cols, EPSILON, flags, format);
 
 	printf(F("Determinant value is: %lg\n"), det);
 
 	printf(F("After applying Gauss/Jordan algorithm is:\n"));
-	imprime_matriz(A, format, rows, cols, EPSILON);
+	imprime_matriz(A, rows, cols, format, EPSILON);
 
 	return 0;
 } /* main */

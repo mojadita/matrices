@@ -31,9 +31,9 @@ leer_matriz(
 int
 imprime_matriz(
 		matriz m,
-		const char *fmt,
 		int filas,
 		int columnas,
+		const char *fmt,
 		double eps);
 
 #endif /* _IO_H */

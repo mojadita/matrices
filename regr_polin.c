@@ -74,14 +74,14 @@ void process(FILE *f, int n)
 
 	if (flags & FLAG_DEBUG) {
 		printf("El sistema a resolver es:\n");
-		imprime_matriz(A, format, n+1, n+2, EPSILON);
+		imprime_matriz(A, n+1, n+2, format, EPSILON);
 	} /* if */
 
 	gauss(A, n+1, n+2, EPSILON, flags, format);
 
 	if (flags & FLAG_DEBUG) {
 		printf("La matriz A queda:\n");
-		imprime_matriz(A, format, n+1, n+2, EPSILON);
+		imprime_matriz(A, n+1, n+2, format, EPSILON);
 	} /* if */
 
     if (flags & FLAG_DEBUG) {

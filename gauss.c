@@ -177,7 +177,7 @@ gauss(
 
         /* now we have zeros under the pivots */
 		if ((flags & FLAG_DEBUG) && mod) {
-			imprime_matriz(A, fmt, rows, cols, eps);
+			imprime_matriz(A, rows, cols, fmt, eps);
 		}
 
 		/* add the pivot to the stack */
@@ -221,7 +221,7 @@ gauss(
 				mod = TRUE;
 			}
 			if ((flags & FLAG_DEBUG) && mod) {
-				imprime_matriz(A, fmt, rows, cols, eps);
+				imprime_matriz(A, rows, cols, fmt, eps);
 			}
 		} /* while more pivots */
 	} /* if (flags & FLAG_LASTPASS) */

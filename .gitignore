@@ -1,3 +1,5 @@
 *.o
 regr_polin
 sist_lin
+cos
+gram_schmidt
